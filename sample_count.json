@@ -1,0 +1,18 @@
+{
+  "db" : {
+    "host" : "localhost",
+    "port" : 5432,
+    "user" : "postgres",
+    "password" : "pass",
+    "database" : "postgres"
+  },
+  "groupings" : [
+    {
+      "column" : "estimated_age",
+      "as"     : "Estimated Age",
+      "table"  : "us_consumer.consumers",
+      "sheet"  : "Est_Age",
+      "group"  : true
+    }
+  ]
+}
