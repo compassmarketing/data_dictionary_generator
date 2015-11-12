@@ -10,16 +10,13 @@ GOOS=linux GOARCH=386 CGO_ENABLED=0 go build -o bin/ddg.linux main.go
 `
 
 ### Usage
-
-ddg <config.json> <outfile.xlsx>
-
 `
-ddg sample.json out.xlsx
+ddg <config.json> <outfile.xlsx>
 `
 
 ### Configuration
 
-`
+```json
 {
   // Database information
   "db" : {
@@ -48,4 +45,4 @@ ddg sample.json out.xlsx
     }
   ]
 }
-`
+```
