@@ -21,6 +21,11 @@ type grouping struct {
 	Sheet     string `json:"sheet"`
 	Condition string `json:"condition"`
 	Group     bool   `json:"group"`
+	Join      struct {
+		Table string `json:"table"`
+		On    string `json:"on"`
+	} `json:"join"`
+	Mappings []string `json:"mappings"`
 }
 
 // Options
@@ -104,7 +109,11 @@ func writeRowToSheet(breakOt breakout, sheet string) error {
 
 	row := activeSheet.AddRow()
 	cell = row.AddCell()
-	cell.Value = string(breakOt.name)
+	if len(breakOt.name) > 0 {
+		cell.Value = string(breakOt.name)
+	} else {
+		cell.Value = "Unknown"
+	}
 	cell = row.AddCell()
 	cell.SetFloatWithFormat(float64(breakOt.count), "#,##0")
 
@@ -158,8 +167,28 @@ func writeFooterRowToSheet(total int64, sheet string) error {
 
 	activeSheet.AddRow()
 	activeSheet.AddRow()
+
 	return nil
 
+}
+
+func writeMappingsToSheet(mappings []string, sheet string) error {
+	activeSheet, err := getActiveSheet(sheet)
+
+	if err != nil {
+		return err
+	}
+
+	for _, mapping := range mappings {
+		row := activeSheet.AddRow()
+		cell := row.AddCell()
+		cell.Value = mapping
+	}
+
+	activeSheet.AddRow()
+	activeSheet.AddRow()
+
+	return nil
 }
 
 func main() {
@@ -197,19 +226,31 @@ func main() {
 	for _, group := range opts.Groupings {
 
 		fmt.Printf("Getting breakout for: %s...", group.As)
-		if empty(group.Condition) {
-			group.Condition = `true = true`
-		}
 
 		//Generate staement for breakout
-		var statement string
+		var statement bytes.Buffer
 		if group.Group {
-			statement = fmt.Sprintf(`SELECT %s AS "%s", count(*) FROM %s WHERE %s GROUP BY %s ORDER BY %s ASC`, group.Column, group.As, group.Table, group.Condition, group.Column, group.Column)
+			statement.WriteString(fmt.Sprintf(` SELECT %s AS "%s", count(*) `, group.Column, group.As))
 		} else {
-			statement = fmt.Sprintf(`SELECT count(*) FROM %s WHERE %s`, group.Table, group.Condition)
+			statement.WriteString(fmt.Sprintf(` SELECT count(*) `))
 		}
 
-		rows, err := db.Query(statement)
+		statement.WriteString(fmt.Sprintf(` FROM %s `, group.Table))
+
+		if !empty(group.Join.Table) && !empty(group.Join.On) {
+			statement.WriteString(fmt.Sprintf(` INNER JOIN %s ON %s `, group.Join.Table, group.Join.On))
+		}
+
+		if !empty(group.Condition) {
+			statement.WriteString(fmt.Sprintf(` WHERE %s `, group.Condition))
+		}
+
+		if group.Group {
+			statement.WriteString(fmt.Sprintf(` GROUP BY %s `, group.Column))
+			statement.WriteString(fmt.Sprintf(` ORDER BY %s ASC `, group.Column))
+		}
+
+		rows, err := db.Query(string(statement.Bytes()))
 		if err != nil {
 			log.Fatalln(err.Error())
 		}
@@ -254,6 +295,10 @@ func main() {
 
 		if group.Group {
 			writeFooterRowToSheet(total, group.Sheet)
+		}
+
+		if len(group.Mappings) > 0 {
+			writeMappingsToSheet(group.Mappings, group.Sheet)
 		}
 
 		fmt.Println("done")
