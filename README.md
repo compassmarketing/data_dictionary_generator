@@ -16,7 +16,7 @@ ddg <config.json> <outfile.xlsx>
 
 ### Configuration
 
-```json
+```javascript
 {
   // Database information
   "db" : {
