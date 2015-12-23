@@ -91,16 +91,16 @@ func getActiveSheet(sheet string) (*xlsx.Sheet, error) {
 	return activeSheet, nil
 }
 
-func writeRowToSheet(data [][]byte, sheet string) (int, error) {
+func writeRowToSheet(data [][]byte, sheet string) ([]int, error) {
 
 	activeSheet, err := getActiveSheet(sheet)
 
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
 	var cell *xlsx.Cell
-	var count int
+	counts := make([]int, len(data))
 
 	row := activeSheet.AddRow()
 	for idx, bytes := range data {
@@ -112,10 +112,7 @@ func writeRowToSheet(data [][]byte, sheet string) (int, error) {
 
 		cell = row.AddCell()
 		if num, err := strconv.Atoi(value); err == nil {
-			if idx == len(data)-1 {
-
-				count = num
-			}
+			counts[idx] = num
 			cell.SetFloatWithFormat(float64(num), "#,##0")
 		} else {
 			if empty(value) {
@@ -125,7 +122,7 @@ func writeRowToSheet(data [][]byte, sheet string) (int, error) {
 			}
 		}
 	}
-	return count, nil
+	return counts, nil
 }
 
 func writeHeaderRowToSheet(columns []string, sheet string) error {
@@ -153,7 +150,7 @@ func writeHeaderRowToSheet(columns []string, sheet string) error {
 	return nil
 }
 
-func writeFooterRowToSheet(total int64, sheet string) error {
+func writeFooterRowToSheet(totals []int64, sheet string) error {
 	activeSheet, err := getActiveSheet(sheet)
 
 	if err != nil {
@@ -170,9 +167,11 @@ func writeFooterRowToSheet(total int64, sheet string) error {
 	cell = row.AddCell()
 	cell.SetStyle(footerStyle)
 	cell.Value = "Total"
-	cell = row.AddCell()
-	cell.SetStyle(footerStyle)
-	cell.SetFloatWithFormat(float64(total), "#,##0")
+	for i := 1; i < len(totals); i++ {
+		cell = row.AddCell()
+		cell.SetStyle(footerStyle)
+		cell.SetFloatWithFormat(float64(totals[i]), "#,##0")
+	}
 
 	activeSheet.AddRow()
 	activeSheet.AddRow()
@@ -241,12 +240,12 @@ func main() {
 			log.Fatalln(err.Error())
 		}
 
-		var total int64
-
 		cols, err := rows.Columns()
 		if err != nil {
 			log.Fatalln(err.Error())
 		}
+
+		totals := make([]int64, len(cols))
 
 		err = writeHeaderRowToSheet(cols, group.Sheet)
 		if err != nil {
@@ -266,12 +265,14 @@ func main() {
 				fmt.Println(err)
 			}
 
-			count, err := writeRowToSheet(values, group.Sheet)
+			counts, err := writeRowToSheet(values, group.Sheet)
 			if err != nil {
 				log.Fatalln(err.Error())
 			}
 
-			total += int64(count)
+			for i, count := range counts {
+				totals[i] += int64(count)
+			}
 
 		}
 		if err := rows.Err(); err != nil {
@@ -279,7 +280,7 @@ func main() {
 		}
 
 		if group.Group {
-			writeFooterRowToSheet(total, group.Sheet)
+			writeFooterRowToSheet(totals, group.Sheet)
 		}
 
 		if len(group.Mappings) > 0 {
