@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -11,21 +10,16 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strconv"
+	"strings"
 )
 
 //Columns
 type grouping struct {
-	Table     string `json:"table"`
-	Column    string `json:"column"`
-	As        string `json:"as"`
-	Sheet     string `json:"sheet"`
-	Condition string `json:"condition"`
-	Group     bool   `json:"group"`
-	Join      struct {
-		Table string `json:"table"`
-		On    string `json:"on"`
-	} `json:"join"`
-	Mappings []string `json:"mappings"`
+	Statement string   `json:"statement"`
+	Sheet     string   `json:"sheet"`
+	Group     bool     `json:"group"`
+	Mappings  []string `json:"mappings"`
 }
 
 // Options
@@ -97,30 +91,44 @@ func getActiveSheet(sheet string) (*xlsx.Sheet, error) {
 	return activeSheet, nil
 }
 
-func writeRowToSheet(breakOt breakout, sheet string) error {
+func writeRowToSheet(data [][]byte, sheet string) (int, error) {
 
 	activeSheet, err := getActiveSheet(sheet)
 
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	var cell *xlsx.Cell
+	var count int
 
 	row := activeSheet.AddRow()
-	cell = row.AddCell()
-	if len(breakOt.name) > 0 {
-		cell.Value = string(breakOt.name)
-	} else {
-		cell.Value = "Unknown"
-	}
-	cell = row.AddCell()
-	cell.SetFloatWithFormat(float64(breakOt.count), "#,##0")
+	for idx, bytes := range data {
+		var value string
 
-	return nil
+		if bytes != nil {
+			value = string(bytes)
+		}
+
+		cell = row.AddCell()
+		if num, err := strconv.Atoi(value); err == nil {
+			if idx == len(data)-1 {
+
+				count = num
+			}
+			cell.SetFloatWithFormat(float64(num), "#,##0")
+		} else {
+			if empty(value) {
+				cell.Value = "Unknown"
+			} else {
+				cell.Value = value
+			}
+		}
+	}
+	return count, nil
 }
 
-func writeHeaderRowToSheet(name string, sheet string) error {
+func writeHeaderRowToSheet(columns []string, sheet string) error {
 
 	activeSheet, err := getActiveSheet(sheet)
 
@@ -137,10 +145,11 @@ func writeHeaderRowToSheet(name string, sheet string) error {
 	var cell *xlsx.Cell
 
 	row := activeSheet.AddRow()
-	cell = row.AddCell()
-	cell.SetStyle(headerStyle)
-	cell.Value = name
-	activeSheet.AddRow()
+	for _, col := range columns {
+		cell = row.AddCell()
+		cell.SetStyle(headerStyle)
+		cell.Value = strings.ToTitle(strings.Replace(col, "_", " ", -1))
+	}
 	return nil
 }
 
@@ -225,68 +234,44 @@ func main() {
 
 	for _, group := range opts.Groupings {
 
-		fmt.Printf("Getting breakout for: %s...", group.As)
+		fmt.Printf("Getting breakout for: %s...", group.Statement)
 
-		//Generate staement for breakout
-		var statement bytes.Buffer
-		if group.Group {
-			statement.WriteString(fmt.Sprintf(` SELECT %s AS "%s", count(*) `, group.Column, group.As))
-		} else {
-			statement.WriteString(fmt.Sprintf(` SELECT count(*) `))
-		}
-
-		statement.WriteString(fmt.Sprintf(` FROM %s `, group.Table))
-
-		if !empty(group.Join.Table) && !empty(group.Join.On) {
-			statement.WriteString(fmt.Sprintf(` INNER JOIN %s ON %s `, group.Join.Table, group.Join.On))
-		}
-
-		if !empty(group.Condition) {
-			statement.WriteString(fmt.Sprintf(` WHERE %s `, group.Condition))
-		}
-
-		if group.Group {
-			statement.WriteString(fmt.Sprintf(` GROUP BY %s `, group.Column))
-			statement.WriteString(fmt.Sprintf(` ORDER BY %s ASC `, group.Column))
-		}
-
-		rows, err := db.Query(string(statement.Bytes()))
+		rows, err := db.Query(group.Statement)
 		if err != nil {
 			log.Fatalln(err.Error())
 		}
 
 		var total int64
 
-		// Write Header
-		if group.Group {
-			err = writeHeaderRowToSheet(group.As, group.Sheet)
-			if err != nil {
-				log.Fatalln(err.Error())
-			}
+		cols, err := rows.Columns()
+		if err != nil {
+			log.Fatalln(err.Error())
 		}
 
+		err = writeHeaderRowToSheet(cols, group.Sheet)
+		if err != nil {
+			log.Fatalln(err.Error())
+		}
 		defer rows.Close()
 
 		for rows.Next() {
 
-			var breakO breakout
-			if group.Group {
-				if err := rows.Scan(&breakO.name, &breakO.count); err != nil {
-					fmt.Println(err)
-				}
-			} else {
-				breakO.name = bytes.NewBufferString(group.As).Bytes()
-				if err := rows.Scan(&breakO.count); err != nil {
-					fmt.Println(err)
-				}
+			data := make([]interface{}, len(cols))
+			values := make([][]byte, len(cols))
+			for i := range values {
+				data[i] = &values[i]
 			}
 
-			err = writeRowToSheet(breakO, group.Sheet)
+			if err := rows.Scan(data...); err != nil {
+				fmt.Println(err)
+			}
+
+			count, err := writeRowToSheet(values, group.Sheet)
 			if err != nil {
 				log.Fatalln(err.Error())
 			}
 
-			total += int64(breakO.count)
+			total += int64(count)
 
 		}
 		if err := rows.Err(); err != nil {

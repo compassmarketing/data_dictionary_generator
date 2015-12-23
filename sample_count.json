@@ -1,18 +1,33 @@
 {
   "db" : {
-    "host" : "localhost",
+    "host" : "dw.compass",
     "port" : 5432,
     "user" : "postgres",
-    "password" : "pass",
+    "password" : "postgres",
     "database" : "postgres"
   },
   "groupings" : [
     {
-      "column" : "estimated_age",
-      "as"     : "Estimated Age",
-      "table"  : "us_consumer.consumers",
-      "sheet"  : "Est_Age",
-      "group"  : true
+      "column" : "description",
+      "as"     : "Buyer Counts",
+      "table"  : "us_consumer.interests",
+      "sheet"  : "Buyer_Counts",
+      "group"  : true,
+      "condition" : "interest_types.code = 'BUYER'",
+      "join"   : {
+        "table" : "us_consumer.interest_types",
+        "on"    : "interests.interest_type_id = interest_types.id"
+      },
+      "mappings" : [
+        "A = Community Development Authority",
+        "B = Conventional",
+        "C =  FHA",
+        "D = Private Party Lender",
+        "E = Small Business Administration",
+        "F = VA",
+        "G = Wrap-Around Mortgage",
+        "U = Unknown"
+      ]
     }
   ]
 }
