@@ -207,13 +207,16 @@ func writeMappingsToSheet(mappings []string, sheet string) error {
 	return nil
 }
 
-func sendEmail(username string, password string, release string, file string) error {
+func sendEmail(username string, password string, release string, file string, layout string) error {
 	e := email.NewEmail()
 	e.From = "Releases <system@cmsdm.com>"
 	e.To = []string{"releases@cmsdm.com"}
 	e.Subject = fmt.Sprintf("Data Dictionary was generated for %s.", release)
 	e.Text = []byte("Please see attached.")
 	e.AttachFile(file)
+	if !empty(layout) {
+		e.AttachFile(layout)
+	}
 	err := e.Send("smtp.gmail.com:587", smtp.PlainAuth("", username, password, "smtp.gmail.com"))
 	return err
 }
@@ -324,36 +327,36 @@ func main() {
 		sheet.SetColWidth(0, len(sheet.Cols)-1, 18)
 	}
 
-	if len(*layoutFile) > 0 {
-		lFile, err := xlsx.OpenFile(*layoutFile)
-		if err != nil {
-			log.Fatalln(err.Error())
-		}
-
-		layoutSheet, err := dd.AddSheet("Layout")
-		if err != nil {
-			log.Fatalln(err.Error())
-		}
-
-		oldSheet := lFile.Sheets[0]
-
-		if len(lFile.Sheets) > 0 {
-			for _, row := range oldSheet.Rows {
-				nRow := layoutSheet.AddRow()
-				for _, cell := range row.Cells {
-					nCell := nRow.AddCell()
-					nCell.SetValue(cell.Value)
-					nCell.SetStyle(cell.GetStyle())
-				}
-			}
-
-			for i, col := range oldSheet.Cols {
-				layoutSheet.Col(i).SetStyle(col.GetStyle())
-				layoutSheet.Col(i).Width = col.Width
-			}
-		}
-
-	}
+	// if len(*layoutFile) > 0 {
+	// 	lFile, err := xlsx.OpenFile(*layoutFile)
+	// 	if err != nil {
+	// 		log.Fatalln(err.Error())
+	// 	}
+	//
+	// 	layoutSheet, err := dd.AddSheet("Layout")
+	// 	if err != nil {
+	// 		log.Fatalln(err.Error())
+	// 	}
+	//
+	// 	oldSheet := lFile.Sheets[0]
+	//
+	// 	if len(lFile.Sheets) > 0 {
+	// 		for _, row := range oldSheet.Rows {
+	// 			nRow := layoutSheet.AddRow()
+	// 			for _, cell := range row.Cells {
+	// 				nCell := nRow.AddCell()
+	// 				nCell.SetValue(cell.Value)
+	// 				nCell.SetStyle(cell.GetStyle())
+	// 			}
+	// 		}
+	//
+	// 		for i, col := range oldSheet.Cols {
+	// 			layoutSheet.Col(i).SetStyle(col.GetStyle())
+	// 			layoutSheet.Col(i).Width = col.Width
+	// 		}
+	// 	}
+	//
+	// }
 
 	// Export excel file
 	err = dd.Save(outFile)
@@ -365,7 +368,7 @@ func main() {
 	if len(*emailCreds) > 0 {
 		creds := strings.Split(*emailCreds, ":")
 
-		err := sendEmail(creds[0], creds[1], *releaseName, outFile)
+		err := sendEmail(creds[0], creds[1], *releaseName, outFile, *layoutFile)
 		if err != nil {
 			log.Println(err.Error())
 		}
