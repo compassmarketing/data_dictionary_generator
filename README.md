@@ -12,12 +12,13 @@ GOOS=linux GOARCH=386 CGO_ENABLED=0 go build -o bin/ddg.linux main.go
 ### Usage
 `
 ddg -c <config.json> [-l layoutFile] [-s test:password] [-r release] <outfile.xlsx>
+`
+```
 -c - Configuration file
 -l - Layout excel file to attach to email
 -s - Email credentials for Gmail server
 -r - Release name
-`
-
+```
 ### Configuration
 
 ```javascript
