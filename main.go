@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
-	"errors"
 	"flag"
 	"fmt"
 	"github.com/jordan-wright/email"
@@ -16,6 +15,9 @@ import (
 	"strings"
 )
 
+// Program usage statement
+const USAGE string = "Usage: ddg -h <host> -p <port> -d <database> -U <username> -W <password> -g <groupings.json> [-l layout.xlsx] <out_dd_name.xlsx>"
+
 //Columns
 type grouping struct {
 	Statement string            `json:"statement"`
@@ -23,18 +25,6 @@ type grouping struct {
 	Group     bool              `json:"group"`
 	Mappings  []string          `json:"mappings"`
 	Format    map[string]string `json:"format"`
-}
-
-// Options
-type options struct {
-	DB struct {
-		Host     string `json:"host"`
-		Port     int    `json:"port"`
-		Database string `json:"database"`
-		User     string `json:"user"`
-		Password string `json:"password"`
-	} `json:"db"`
-	Groupings []grouping `json:"groupings"`
 }
 
 type breakout struct {
@@ -46,32 +36,6 @@ var dd *xlsx.File
 
 func empty(str string) bool {
 	return len(str) == 0
-}
-
-// Make sure all required options are passed
-func check(opts options) error {
-
-	if empty(opts.DB.Host) {
-		return errors.New("No postgres host found in options.")
-	}
-
-	if opts.DB.Port == 0 {
-		return errors.New("No postgres dataportbase found in options.")
-	}
-
-	if empty(opts.DB.User) {
-		return errors.New("No postgres user found in options.")
-	}
-
-	if empty(opts.DB.Database) {
-		return errors.New("No postgres database found in options.")
-	}
-
-	if empty(opts.DB.Password) {
-		return errors.New("No postgres password found in options.")
-	}
-
-	return nil
 }
 
 func getActiveSheet(sheet string) (*xlsx.Sheet, error) {
@@ -116,12 +80,13 @@ func writeRowToSheet(data [][]byte, sheet string, format map[string]string) ([]i
 		cell = row.AddCell()
 		if num, err := strconv.Atoi(value); err == nil {
 			counts[idx] = num
-			switch format[strconv.Itoa(idx)] {
-			case "code":
-				cell.SetFloatWithFormat(float64(num), "0")
-			default:
+
+			if val, ok := format[strconv.Itoa(idx)]; ok {
+				cell.SetFloatWithFormat(float64(num), val)
+			} else {
 				cell.SetFloatWithFormat(float64(num), "#,##0")
 			}
+
 		} else {
 			if empty(value) {
 				cell.Value = "Unknown"
@@ -207,31 +172,41 @@ func writeMappingsToSheet(mappings []string, sheet string) error {
 	return nil
 }
 
-func sendEmail(username string, password string, release string, file string, layout string) error {
+func sendEmail(username string, password string, release string, file string) error {
 	e := email.NewEmail()
 	e.From = "Releases <system@cmsdm.com>"
 	e.To = []string{"releases@cmsdm.com"}
 	e.Subject = fmt.Sprintf("Data Dictionary was generated for %s.", release)
 	e.Text = []byte("Please see attached.")
 	e.AttachFile(file)
-	if !empty(layout) {
-		e.AttachFile(layout)
-	}
 	err := e.Send("smtp.gmail.com:587", smtp.PlainAuth("", username, password, "smtp.gmail.com"))
 	return err
 }
 
 func main() {
 
+	//Database credentials
+	dbHost := flag.String("h", "", "Database Host")
+	dbPort := flag.String("p", "", "Database Port")
+	dbName := flag.String("d", "", "Database")
+	dbUser := flag.String("U", "", "Database username")
+	dbPass := flag.String("W", "", "Database password")
+
 	layoutFile := flag.String("l", "", "Excel layout file")
-	configFile := flag.String("c", "", "Excel out file")
+	configFile := flag.String("g", "", "Groupings")
 	emailCreds := flag.String("s", "", "Send email with credentials username:password")
 	releaseName := flag.String("r", "Release", "Release Name")
 
 	flag.Parse()
 
+	if empty(*dbHost) || empty(*dbPort) || empty(*dbName) || empty(*dbUser) || empty(*dbPass) {
+		fmt.Println(USAGE)
+		log.Fatalln("Database credentials invalid.")
+	}
+
 	if len(flag.Args()) != 1 {
-		log.Fatalln("Usage: ddg -c <config.json> [-l layout.xlsx] <out_dd_name.xlsx>")
+		fmt.Println(USAGE)
+		log.Fatalln("No output file found.")
 	}
 
 	outFile := flag.Args()[0]
@@ -243,13 +218,8 @@ func main() {
 	}
 
 	// Load options
-	var opts options
-	if err := json.Unmarshal(file, &opts); err != nil {
-		log.Fatalln(err.Error())
-	}
-
-	// Check options for required
-	if err := check(opts); err != nil {
+	var groupings []grouping
+	if err := json.Unmarshal(file, &groupings); err != nil {
 		log.Fatalln(err.Error())
 	}
 
@@ -257,12 +227,12 @@ func main() {
 	dd = xlsx.NewFile()
 
 	// Open DB connection
-	db, err := sql.Open("postgres", fmt.Sprintf("host=%s port=%d dbname=%s user=%s sslmode=disable password=%s", opts.DB.Host, opts.DB.Port, opts.DB.Database, opts.DB.User, opts.DB.Password))
+	db, err := sql.Open("postgres", fmt.Sprintf("host=%s port=%s dbname=%s user=%s sslmode=disable password=%s", *dbHost, *dbPort, *dbName, *dbUser, *dbPass))
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
 
-	for _, group := range opts.Groupings {
+	for _, group := range groupings {
 
 		fmt.Printf("Getting breakout for: %s...", group.Statement)
 
@@ -327,36 +297,36 @@ func main() {
 		sheet.SetColWidth(0, len(sheet.Cols)-1, 18)
 	}
 
-	// if len(*layoutFile) > 0 {
-	// 	lFile, err := xlsx.OpenFile(*layoutFile)
-	// 	if err != nil {
-	// 		log.Fatalln(err.Error())
-	// 	}
-	//
-	// 	layoutSheet, err := dd.AddSheet("Layout")
-	// 	if err != nil {
-	// 		log.Fatalln(err.Error())
-	// 	}
-	//
-	// 	oldSheet := lFile.Sheets[0]
-	//
-	// 	if len(lFile.Sheets) > 0 {
-	// 		for _, row := range oldSheet.Rows {
-	// 			nRow := layoutSheet.AddRow()
-	// 			for _, cell := range row.Cells {
-	// 				nCell := nRow.AddCell()
-	// 				nCell.SetValue(cell.Value)
-	// 				nCell.SetStyle(cell.GetStyle())
-	// 			}
-	// 		}
-	//
-	// 		for i, col := range oldSheet.Cols {
-	// 			layoutSheet.Col(i).SetStyle(col.GetStyle())
-	// 			layoutSheet.Col(i).Width = col.Width
-	// 		}
-	// 	}
-	//
-	// }
+	if len(*layoutFile) > 0 {
+		lFile, err := xlsx.OpenFile(*layoutFile)
+		if err != nil {
+			log.Fatalln(err.Error())
+		}
+
+		layoutSheet, err := dd.AddSheet("Layout")
+		if err != nil {
+			log.Fatalln(err.Error())
+		}
+
+		oldSheet := lFile.Sheets[0]
+
+		if len(lFile.Sheets) > 0 {
+			for _, row := range oldSheet.Rows {
+				nRow := layoutSheet.AddRow()
+				for _, cell := range row.Cells {
+					nCell := nRow.AddCell()
+					nCell.SetValue(cell.Value)
+					nCell.SetStyle(cell.GetStyle())
+				}
+			}
+
+			for i, col := range oldSheet.Cols {
+				layoutSheet.Col(i).SetStyle(col.GetStyle())
+				layoutSheet.Col(i).Width = col.Width
+			}
+		}
+
+	}
 
 	// Export excel file
 	err = dd.Save(outFile)
@@ -368,7 +338,7 @@ func main() {
 	if len(*emailCreds) > 0 {
 		creds := strings.Split(*emailCreds, ":")
 
-		err := sendEmail(creds[0], creds[1], *releaseName, outFile, *layoutFile)
+		err := sendEmail(creds[0], creds[1], *releaseName, outFile)
 		if err != nil {
 			log.Println(err.Error())
 		}
