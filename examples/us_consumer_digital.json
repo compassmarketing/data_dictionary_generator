@@ -1,0 +1,52 @@
+[
+    {
+      "statement": "SELECT STATE, sum(CASE WHEN e.connection_type = 'CABLE' THEN 1 ELSE 0 END) AS Cable, sum(CASE WHEN e.connection_type = 'CORP' THEN 1 ELSE 0 END) AS Corp, sum(CASE WHEN e.connection_type = 'DIALUP' THEN 1 ELSE 0 END) AS DialUp, sum(CASE WHEN e.connection_type = 'DSL' THEN 1 ELSE 0 END) AS DSL, sum(CASE WHEN e.connection_type = 'FIBER' THEN 1 ELSE 0 END) AS Fiber, count(*) AS Total FROM us_consumer.consumers c INNER JOIN us_consumer.emails e ON c.id = e.consumer_id GROUP BY STATE ORDER BY state ASC",
+      "sheet"  : "State",
+      "group"  : true
+    },
+    {
+      "statement": "SELECT count(*) as Total_Number_of_records_with_Phones FROM us_consumer.consumers c INNER JOIN us_consumer.emails e ON c.id = e.consumer_id WHERE phone IS NOT NULL",
+      "sheet"  : "Other_Counts"
+    },
+    {
+      "statement": "SELECT count(*) as Total_Number_of_records_with_DOB FROM us_consumer.consumers c INNER JOIN us_consumer.emails e ON c.id = e.consumer_id WHERE dob IS NOT NULL",
+      "sheet"  : "Other_Counts"
+    },
+    {
+      "statement": "SELECT count(*) as Total_Number_of_records_with_Marital_Status_Flag FROM us_consumer.consumers c INNER JOIN us_consumer.emails e ON c.id = e.consumer_id WHERE married = 1 OR married = 0",
+      "sheet"  : "Other_Counts"
+    },
+    {
+      "statement": "SELECT isp as Service_Provider, count(*) as Count FROM us_consumer.consumers c INNER JOIN us_consumer.emails e ON c.id = e.consumer_id GROUP BY isp ORDER BY Count DESC LIMIT 50",
+      "sheet"  : "CONNECTION TOP 50 IP PROVIDERS"
+    },
+    {
+      "statement": "SELECT referal_esp as Email_Provider, count(*) as Count FROM us_consumer.consumers c INNER JOIN us_consumer.emails e ON c.id = e.consumer_id GROUP BY referal_esp ORDER BY Count DESC LIMIT 50",
+      "sheet"  : "EMAIL TOP 50 PROVIDERS"
+    },
+    {
+      "statement" : "SELECT ethnicity AS Ethnicity, count(*) as Count FROM us_consumer.consumers c INNER JOIN us_consumer.emails e ON c.id = e.consumer_id GROUP BY ethnicity  ORDER BY ethnicity ASC ",
+      "sheet"  : "Ethnicity",
+      "group"  : true,
+      "mappings" : [
+        "A =  Arabic",
+        "B = Chinese",
+        "C = Hindu",
+        "D = Hispanic",
+        "E = Japanese",
+        "F = Korean",
+        "G = Russian",
+        "H = Vietnamese"
+      ]
+    },
+    {
+      "statement" : " SELECT gender AS Gender, count(*) as Count FROM us_consumer.consumers c INNER JOIN us_consumer.emails e ON c.id = e.consumer_id GROUP BY gender  ORDER BY gender ASC ",
+      "sheet"  : "Gender",
+      "group"  : true,
+      "mappings" : [
+        "F=Female",
+        "M=Male",
+        "U=Unknown"
+      ]
+    }
+  ]

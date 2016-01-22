@@ -1,0 +1,7 @@
+[
+    {
+      "statement": "SELECT state as State, count(*) as Count FROM us_consumer.consumers WHERE DOB IS NOT NULL AND dob_verification IS NOT NULL GROUP BY State ORDER BY state ASC",
+      "sheet"  : "State",
+      "group"  : true
+    }
+  ]

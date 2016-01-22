@@ -1,0 +1,415 @@
+[
+    {
+      "statement": "SELECT state as State, count(*) as Count FROM us_consumer.consumers GROUP BY State ORDER BY state ASC",
+      "sheet"  : "State",
+      "group"  : true
+    },
+    {
+      "statement" : "SELECT dwelling_type AS Dwelling, count(*) as count FROM us_consumer.consumers  GROUP BY dwelling_type  ORDER BY dwelling_type ASC",
+      "sheet"  : "Dwelling",
+      "group"  : true,
+      "mappings" : [
+        "A = Apt/Multi",
+        "B = BLDG",
+        "C = SFDU",
+        "D = RR or PO Box",
+        "E = Lot",
+        "F = Hanger",
+        "G = Pier",
+        "H = Suites",
+        "I = Trailer",
+        "J = Unit",
+        "K = Wing",
+        "L = Stop"
+      ]
+    },
+    {
+      "statement" : "SELECT education AS Education, count(*) as count FROM us_consumer.consumers  GROUP BY education  ORDER BY education ASC",
+      "sheet"  : "Education",
+      "group"  : true,
+      "mappings" : [
+        "1 = Completed High School",
+        "2 = Some College",
+        "3 = Completed College",
+        "4 = Completed Graduate School",
+        "5 = Attended Vocational/Technical"
+      ]
+    },
+    {
+      "statement" : "SELECT estimated_age AS Estimated_Age, count(*) as Count FROM us_consumer.consumers  GROUP BY estimated_age  ORDER BY estimated_age ASC",
+      "sheet"  : "Est_Age",
+      "group"  : true,
+      "mappings" : [
+        "A=18-24",
+        "B=25-29",
+        "C=30-34",
+        "D=35-39",
+        "E=40-44",
+        "F=45-49",
+        "G=50-54",
+        "H=55-59",
+        "I=60-64",
+        "J=65-69",
+        "K=70+"
+      ]
+    },
+    {
+      "statement" : " SELECT gender AS Gender, count(*) as Count FROM us_consumer.consumers  GROUP BY gender  ORDER BY gender ASC ",
+      "sheet"  : "Gender",
+      "group"  : true,
+      "mappings" : [
+        "F=Female",
+        "M=Male"
+      ]
+    },
+    {
+      "statement" : "SELECT count(*) as has_purchase_date  FROM us_consumer.consumers  WHERE purchase_date IS NOT NULL ",
+      "sheet"  : "Mortage"
+    },
+    {
+      "statement" : "SELECT count(*) as has_purchase_price  FROM us_consumer.consumers  WHERE purchase_price IS NOT NULL ",
+      "sheet"  : "Mortage"
+    },
+    {
+      "statement" : "SELECT count(*) as has_most_recent_mortage  FROM us_consumer.loans  WHERE type = 'MR1' ",
+      "sheet"  : "Mortage"
+    },
+    {
+      "statement" : "SELECT count(*) as has_most_recent_loan_date FROM us_consumer.loans  WHERE type = 'MR1' AND loan_date IS NOT NULL ",
+      "sheet"  : "Mortage"
+    },
+    {
+      "statement" : "SELECT count(*) as has_second_most_recent_mortage  FROM us_consumer.loans  WHERE type = 'MR2' ",
+      "sheet"  : "Mortage"
+    },
+    {
+      "statement" : "SELECT count(*) as has_second_most_recent_loan_date FROM us_consumer.loans  WHERE type = 'MR2' AND loan_date IS NOT NULL ",
+      "sheet"  : "Mortage"
+    },
+    {
+      "statement": "SELECT (CASE WHEN purchase_price >= 1 AND purchase_price < 100000 THEN 'A' WHEN purchase_price >= 100000 AND purchase_price < 199999 THEN 'B' WHEN purchase_price >= 200000 AND purchase_price < 299999 THEN 'C' WHEN purchase_price >= 300000 AND purchase_price < 399999 THEN 'D' WHEN purchase_price >= 400000 AND purchase_price < 499999 THEN 'E' WHEN purchase_price >= 500000 AND purchase_price < 599999 THEN 'F' WHEN purchase_price >= 600000 AND purchase_price < 699999 THEN 'G' WHEN purchase_price >= 700000 AND purchase_price < 799999 THEN 'H' WHEN purchase_price >= 800000 AND purchase_price < 899999 THEN 'I' WHEN purchase_price >= 900000 AND purchase_price < 999999 THEN 'J' WHEN purchase_price >= 1000000 AND purchase_price < 1199999 THEN 'K' WHEN purchase_price >= 1200000 AND purchase_price < 1399999 THEN 'L' WHEN purchase_price >= 1400000 AND purchase_price < 1599999 THEN 'M' WHEN purchase_price >= 1600000 AND purchase_price < 1799999 THEN 'N' WHEN purchase_price >= 1800000 AND purchase_price < 1999999 THEN 'O' WHEN purchase_price >= 2000000 THEN 'P' ELSE '' END) as grade, count(*) as Count FROM us_consumer.consumers GROUP BY grade ORDER BY grade",
+      "sheet"  : "PurchasePrice",
+      "group"  : true,
+      "mappings" : [
+        "A = Under $100,000",
+        "B = $100,000 - $199,999",
+        "C = $200,000 - $299,999",
+        "D = $300,000 - $399,999",
+        "E = $400,000 - $499,999",
+        "F = $500,000 - $599,999",
+        "G = $600,000 - $699,999",
+        "H = $700,000 - $799,999",
+        "I = $800,000 - $899,999",
+        "J = $900,000 - $999,999",
+        "K = $1,000,000 - $1,199,999",
+        "L = $1,200,000 - $1,399,999",
+        "M = $1,400,000 - $1,599,999",
+        "N = $1,600,000 - $1,799,999",
+        "O = $1,800,000 - $1,999,999",
+        "P = $2,000,000+"
+      ]
+    },
+    {
+      "statement" : "SELECT household_income AS Estimated_Household_Income, count(*) as Count  FROM us_consumer.consumers  GROUP BY household_income  ORDER BY household_income ASC",
+      "sheet"  : "Est_HH_Inc",
+      "group"  : true,
+      "mappings" : [
+        "A = Under $15,000",
+        "B = $15,000 - $24,999",
+        "C = $25,000 - $34,999",
+        "D = $35,000 - $49,999",
+        "E = $50,000 - $74,999",
+        "F = $75,000 - $99,999",
+        "G = $100,000 - $149,999",
+        "H = $150,000 - $159,999",
+        "I = $160,000 - $164,999",
+        "J = $165,000 - $199,999",
+        "K = $200,000 - $249,999",
+        "L = $250,000+"
+      ]
+    },
+    {
+      "statement" : "SELECT household_size AS Household_Size, count(*) as Count FROM us_consumer.consumers  GROUP BY household_size  ORDER BY household_size ASC",
+      "sheet"  : "HH_Size",
+      "group"  : true
+    },
+    {
+      "sheet"  : "Homeowner",
+      "statement" : "SELECT home_owner AS Home_Owner, count(*) as Count FROM us_consumer.consumers  GROUP BY home_owner  ORDER BY home_owner ASC ",
+      "group"  : true,
+      "mappings" : [
+        "1=Yes",
+        "0=No"
+      ]
+    },
+    {
+      "sheet"  : "Homevalue",
+      "statement" : "SELECT home_value AS Home_Value, count(*) as Count FROM us_consumer.consumers  GROUP BY home_value  ORDER BY home_value ASC ",
+      "group"  : true,
+      "mappings" : [
+        "A = Less Than $50,000",
+        "B = $50,000 - $99,999",
+        "C = $100,000 - $149,999",
+        "D = $150,000 - $199,999",
+        "E = $200,000 - $249,999",
+        "F = $250,000 - $299,999",
+        "G = $300,000 - $349,999",
+        "H = $350,000 - $399,999",
+        "I = $400,000 - $449,999",
+        "J = $450,000 - $499,999",
+        "K = $500,000 - $749,999",
+        "L = $750,000 - $999,999",
+        "M = $1 Million+"
+      ]
+    },
+    {
+      "statement" : " SELECT married AS Married, count(*) as Count FROM us_consumer.consumers  GROUP BY married  ORDER BY married ASC ",
+      "sheet"  : "Married",
+      "group"  : true,
+      "mappings" : [
+        "1=Yes",
+        "0=No"
+      ]
+    },
+    {
+      "statement" : "SELECT networth AS Networth, count(*) as Count FROM us_consumer.consumers  GROUP BY networth  ORDER BY networth ASC",
+      "sheet"  : "Networth",
+      "group"  : true,
+      "mappings" : [
+        "A = Less Than $50,000",
+        "B = $50,000 - $99,999",
+        "C = $100,000 - $249,999",
+        "D = $250,000 - $499,999",
+        "E = $500,000+"
+      ]
+    },
+    {
+      "statement" : "SELECT pc_owner AS PC_Owner, count(*) as Count FROM us_consumer.consumers  GROUP BY pc_owner  ORDER BY pc_owner ASC",
+      "sheet"  : "PCOwner",
+      "group"  : true,
+      "mappings" : [
+        "1=Yes",
+        "0=No"
+      ]
+    },
+    {
+      "statement" : "SELECT kids_present AS Presence_of_Children, count(*) as Count FROM us_consumer.consumers  GROUP BY kids_present  ORDER BY kids_present ASC",
+      "sheet"  : "HasChildren",
+      "group"  : true,
+      "mappings" : [
+        "1=Yes",
+        "0=No"
+      ]
+    },
+    {
+      "statement" : "SELECT ac_type AS Property_Air_Conditioning, count(*) as Count FROM us_consumer.consumers  GROUP BY ac_type  ORDER BY ac_type ASC",
+      "sheet"  : "PropAC",
+      "group"  : true,
+      "mappings" : [
+        "A = Central",
+        "B = Central & Unit",
+        "C = Dual Unit",
+        "D = Evaporative",
+        "E = Heat Pump",
+        "F = Refrigeration",
+        "G = Package",
+        "H = Separate System",
+        "I = Split System",
+        "J = Wall Unit",
+        "K = Window Unit",
+        "L = Wall/Window Unit"
+      ]
+    },
+    {
+      "statement" : "SELECT fuel_type AS Property_Fuel_Type, count(*) as Count FROM us_consumer.consumers  GROUP BY fuel_type  ORDER BY fuel_type ASC",
+      "sheet"  : "PropFuel",
+      "group"  : true,
+      "mappings" : [
+        "A = Electric",
+        "B = Gas",
+        "C = Gas Public/Piped",
+        "D = Oil"
+      ]
+    },
+    {
+      "statement" : "SELECT has_pool AS Property_Pool, count(*) as Count FROM us_consumer.consumers  GROUP BY has_pool  ORDER BY has_pool ASC",
+      "sheet"  : "PropPool",
+      "group"  : true,
+      "mappings" : [
+        "1=Yes",
+        "0=No"
+      ]
+    },
+    {
+      "statement" : "SELECT ethnicity AS Ethnicity, count(*) as Count FROM us_consumer.consumers  GROUP BY ethnicity  ORDER BY ethnicity ASC ",
+      "sheet"  : "Ethnicity",
+      "group"  : true,
+      "mappings" : [
+        "A =  Arabic",
+        "B = Chinese",
+        "C = Hindu",
+        "D = Hispanic",
+        "E = Japanese",
+        "F = Korean",
+        "G = Russian",
+        "H = Vietnamese"
+      ]
+    },
+    {
+      "statement" : "SELECT occupation AS Occupation, count(*) as Count FROM us_consumer.consumers  GROUP BY occupation  ORDER BY occupation ASC ",
+      "sheet"  : "Occupation",
+      "group"  : true,
+      "mappings" : [
+        "02=Professional/Technical",
+        "03=Upper Mgt/Executive",
+        "04=Middle Mgt",
+        "05=Sales/Marketing",
+        "06=Office Clerical",
+        "07=Skilled Trade",
+        "08=Retired",
+        "10=Executive/Admin",
+        "11=Self Employed",
+        "12=Professional Driver",
+        "13=Military",
+        "14=Civil Servant",
+        "15=Farming/agriculture",
+        "16=Work from Home",
+        "17=Health Services",
+        "18=Financial Services",
+        "20=Business Owner",
+        "21=Teacher/Educator",
+        "22=Retail Services",
+        "23=Computer Professional",
+        "30=Beauty",
+        "31=Real Estate",
+        "32=Architects",
+        "33=Interior Designs",
+        "34=landscape Architects",
+        "35=Electricians",
+        "36=Engineers",
+        "37=Accountants",
+        "38=Attorneys",
+        "39=Social workers",
+        "40=Counselors",
+        "41=Occupational Therapy",
+        "42=Speech Pathologist",
+        "43=Psychologists",
+        "44=Pharmacist",
+        "45=Opticians/Optometrists",
+        "46=Veterinarians",
+        "47=Dentist",
+        "48=Nurses",
+        "49=Doctors",
+        "50=Chropractors",
+        "51=Surveyors",
+        "52=Clergy",
+        "53=Insurance/Underwriters",
+        "54=Services/Creative"
+      ]
+    },
+    {
+      "statement" : "SELECT occup_biz_owner AS Occupation_Business_Owner, count(*) as Count FROM us_consumer.consumers  GROUP BY occup_biz_owner  ORDER BY occup_biz_owner ASC",
+      "sheet"  : "Occup_Biz_Owner",
+      "group"  : true,
+      "mappings" : [
+        "A = Accountant",
+        "B = Builder",
+        "C = Contractor",
+        "D = Dealer/Retailer/Storekeeper",
+        "E = Distributor/Wholesaler",
+        "F = Funeral Directore",
+        "G = Maker/Manufacturer",
+        "H = Owner",
+        "I = Partner",
+        "J = Self-Employed"
+      ]
+    },
+    {
+      "statement" : "SELECT description AS Buyer_Counts, count(*) as Count FROM us_consumer.interests  INNER JOIN us_consumer.interest_types ON interests.interest_type_id = interest_types.id  WHERE interest_types.code = 'BUYER'  GROUP BY description  ORDER BY description ASC",
+      "sheet"  : "Buyer_Counts",
+      "group"  : true
+    },
+    {
+      "statement" : "SELECT description AS Credit_Card_User_Counts, count(*) as Count FROM us_consumer.interests  INNER JOIN us_consumer.interest_types ON interests.interest_type_id = interest_types.id  WHERE interest_types.code = 'CARDUSER'  GROUP BY description  ORDER BY description ASC",
+      "sheet"  : "CC_Counts",
+      "group"  : true
+    },
+    {
+      "statement" : "SELECT description AS Doner_Counts, count(*) as Count FROM us_consumer.interests  INNER JOIN us_consumer.interest_types ON interests.interest_type_id = interest_types.id  WHERE interest_types.code = 'DONER'  GROUP BY description  ORDER BY description ASC",
+      "sheet"  : "Doner_Counts",
+      "group"  : true
+    },
+    {
+      "statement" : "SELECT description AS Interest_Counts, count(*) as Count FROM us_consumer.interests  INNER JOIN us_consumer.interest_types ON interests.interest_type_id = interest_types.id  WHERE interest_types.code = 'INTEREST'  GROUP BY description  ORDER BY description ASC",
+      "sheet"  : "Interest_Counts",
+      "group"  : true
+    },
+    {
+      "statement" : "SELECT description AS Lifestyle_Counts, count(*) as Count FROM us_consumer.interests  INNER JOIN us_consumer.interest_types ON interests.interest_type_id = interest_types.id  WHERE interest_types.code = 'LIFESTYLE'  GROUP BY description  ORDER BY description ASC",
+      "sheet"  : "Lifestyle_Counts",
+      "group"  : true
+    },
+    {
+      "statement" : "SELECT description AS Entertainment_Counts, count(*) as Count FROM us_consumer.interests  INNER JOIN us_consumer.interest_types ON interests.interest_type_id = interest_types.id  WHERE interest_types.code = 'ENTERTAIN'  GROUP BY description  ORDER BY description ASC",
+      "sheet"  : "Entertain_Counts",
+      "group"  : true
+    },
+    {
+      "statement" : "SELECT description AS Spectator_Counts, count(*) as Count FROM us_consumer.interests  INNER JOIN us_consumer.interest_types ON interests.interest_type_id = interest_types.id  WHERE interest_types.code = 'SPECTATOR'  GROUP BY description  ORDER BY description ASC",
+      "sheet"  : "Spectator_Counts",
+      "group"  : true
+    },
+    {
+      "statement" : "SELECT description AS Reading_Counts, count(*) as Count FROM us_consumer.interests  INNER JOIN us_consumer.interest_types ON interests.interest_type_id = interest_types.id  WHERE interest_types.code = 'READING'  GROUP BY description  ORDER BY description ASC",
+      "sheet"  : "Reading_Counts",
+      "group"  : true
+    },
+    {
+      "statement" : "SELECT rate_type AS Most_Recent_Mortage_Interest_Rate, count(*) as Count FROM us_consumer.loans  WHERE type = 'MR1'  GROUP BY rate_type  ORDER BY rate_type ASC",
+      "sheet"  : "MostRecentMortageRate",
+      "group" : true,
+      "mappings" :[
+        "A = Adjustable",
+        "B = Balloon",
+        "C = Fixed"
+      ]
+    },
+    {
+      "statement" : "SELECT loan_type AS Most_Recent_Mortage_Loan_Type, count(*) as Count FROM us_consumer.loans  WHERE type = 'MR1'  GROUP BY loan_type  ORDER BY loan_type ASC",
+      "sheet"  : "MostRecentMortageLoan",
+      "group" : true,
+      "mappings" : [
+        "A = Community Development Authority",
+        "B = Conventional",
+        "C =  FHA",
+        "D = Private Party Lender",
+        "E = Small Business Administration",
+        "F = VA",
+        "G = Wrap-Around Mortgage"
+      ]
+    },
+    {
+      "statement" : "SELECT rate_type AS Second_Mortage_Interest_Rate, count(*) as Count FROM us_consumer.loans  WHERE type = 'MR2'  GROUP BY rate_type  ORDER BY rate_type ASC",
+      "sheet"  : "SecondMortageRate",
+      "group" : true,
+      "mappings" :[
+        "A = Adjustable",
+        "B = Balloon",
+        "C = Fixed"
+      ]
+    },
+    {
+      "statement" : "SELECT loan_type AS Second_Mortage_Loan_Type, count(*) as Count FROM us_consumer.loans  WHERE type = 'MR2'  GROUP BY loan_type  ORDER BY loan_type ASC",
+      "sheet"  : "SecondMortageLoan",
+      "group" : true,
+      "mappings" : [
+        "A = Community Development Authority",
+        "B = Conventional",
+        "C =  FHA",
+        "D = Private Party Lender",
+        "E = Small Business Administration",
+        "F = VA",
+        "G = Wrap-Around Mortgage"
+      ]
+    }
+  ]

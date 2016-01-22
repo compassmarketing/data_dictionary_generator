@@ -1,0 +1,134 @@
+[
+    {
+      "statement": "SELECT (CASE WHEN h.consumer_id IS NOT NULL THEN 'Name & Address' ELSE 'Address Only' END) as \"Type\", sum(CASE WHEN h.aging = 30 THEN 1 ELSE 0 END) AS \"30\", sum(CASE WHEN h.aging = 60 THEN 1 ELSE 0 END) AS \"60\", sum(CASE WHEN h.aging = 90 THEN 1 ELSE 0 END) AS \"90\", sum(CASE WHEN h.aging = 120 THEN 1 ELSE 0 END) AS \"120\", count(*) AS \"Total\" FROM premover.homes h WHERE sold = false AND aging <= 120 GROUP BY h.consumer_id IS NOT NULL ORDER BY h.consumer_id IS NOT NULL DESC",
+      "sheet"  : "Other Counts",
+      "group" : true
+    },
+    {
+      "statement": "SELECT 'Records with SQFT' as \"Type\", sum(CASE WHEN h.aging = 30 THEN 1 ELSE 0 END) AS \"30\", sum(CASE WHEN h.aging = 60 THEN 1 ELSE 0 END) AS \"60\", sum(CASE WHEN h.aging = 90 THEN 1 ELSE 0 END) AS \"90\", sum(CASE WHEN h.aging = 120 THEN 1 ELSE 0 END) AS \"120\", count(*) AS \"Total\" FROM premover.homes h WHERE sold = false AND aging <= 120 AND h.sqft IS NOT NULL AND h.sqft > 0",
+      "sheet"  : "Other Counts",
+      "group" : true
+    },
+    {
+      "statement": "SELECT h.scf, sum(CASE WHEN h.aging = 30 THEN 1 ELSE 0 END) AS \"30\", sum(CASE WHEN h.aging = 60 THEN 1 ELSE 0 END) AS \"60\", sum(CASE WHEN h.aging = 90 THEN 1 ELSE 0 END) AS \"90\", sum(CASE WHEN h.aging = 120 THEN 1 ELSE 0 END) AS \"120\", count(*) AS \"Total\" FROM premover.homes h WHERE sold = false AND aging <= 120 GROUP BY scf ORDER BY h.scf",
+      "sheet"  : "SCF",
+      "group" : true,
+      "format" : {
+          "0" : "000"
+        }
+    },
+    {
+      "statement": "SELECT dwelling as \"Dwelling\", sum(CASE WHEN h.aging = 30 THEN 1 ELSE 0 END) AS \"30\", sum(CASE WHEN h.aging = 60 THEN 1 ELSE 0 END) AS \"60\", sum(CASE WHEN h.aging = 90 THEN 1 ELSE 0 END) AS \"90\", sum(CASE WHEN h.aging = 120 THEN 1 ELSE 0 END) AS \"120\", count(*) AS \"Total\" FROM premover.homes h WHERE sold = false AND aging <= 120 GROUP BY dwelling ORDER BY h.dwelling",
+      "sheet"  : "Dwelling",
+      "group"  : true,
+      "mappings" : [
+        "A = Apt/Multi",
+        "B = BLDG",
+        "C = SFDU",
+        "D = RR or PO Box",
+        "E = Lot",
+        "F = Hanger",
+        "G = Pier",
+        "H = Suites",
+        "I = Trailer",
+        "J = Unit",
+        "K = Wing",
+        "L = Stop"
+      ]
+    },
+    {
+      "statement" : "SELECT c.gender as \"Gender\", sum(CASE WHEN h.aging = 30 THEN 1 ELSE 0 END) AS \"30\", sum(CASE WHEN h.aging = 60 THEN 1 ELSE 0 END) AS \"60\", sum(CASE WHEN h.aging = 90 THEN 1 ELSE 0 END) AS \"90\", sum(CASE WHEN h.aging = 120 THEN 1 ELSE 0 END) AS \"120\", count(*) AS \"Total\"  FROM premover.homes h INNER JOIN us_consumer.consumers c ON c.id = h.consumer_id WHERE sold = false AND aging <= 120 GROUP BY c.gender ORDER BY c.gender",
+      "sheet"  : "Gender",
+      "group"  : true,
+      "mappings" : [
+        "F=Female",
+        "M=Male",
+        "U=Unknown"
+      ]
+    },
+    {
+      "statement" : "SELECT c.ethnicity as \"Ethnicity\", sum(CASE WHEN h.aging = 30 THEN 1 ELSE 0 END) AS \"30\", sum(CASE WHEN h.aging = 60 THEN 1 ELSE 0 END) AS \"60\", sum(CASE WHEN h.aging = 90 THEN 1 ELSE 0 END) AS \"90\", sum(CASE WHEN h.aging = 120 THEN 1 ELSE 0 END) AS \"120\", count(*) AS \"Total\" FROM premover.homes h INNER JOIN us_consumer.consumers c ON c.id = h.consumer_id WHERE sold = false AND h.aging <= 120 GROUP BY c.ethnicity ORDER BY c.ethnicity",
+      "sheet"  : "Ethnicity",
+      "group"  : true,
+      "mappings" : [
+        "A =  Arabic",
+        "B = Chinese",
+        "C = Hindu",
+        "D = Hispanic",
+        "E = Japanese",
+        "F = Korean",
+        "G = Russian",
+        "H = Vietnamese",
+        "U = Unknown"
+      ]
+    },
+    {
+      "statement" : "SELECT sales_amount_code as \"Sale Ammount\", sum(CASE WHEN h.aging = 30 THEN 1 ELSE 0 END) AS \"30\", sum(CASE WHEN h.aging = 60 THEN 1 ELSE 0 END) AS \"60\", sum(CASE WHEN h.aging = 90 THEN 1 ELSE 0 END) AS \"90\", sum(CASE WHEN h.aging = 120 THEN 1 ELSE 0 END) AS \"120\", count(*) AS \"Total\" FROM premover.homes h WHERE sold = false AND aging <= 120 GROUP BY h.sales_amount_code ORDER BY h.sales_amount_code",
+      "sheet":"SalesAmount",
+      "group":true,
+      "mappings" : [
+        "A = 70K-99K",
+        "B = 100K-199K",
+        "C = 200K-299K",
+        "D = 300K-399K",
+        "E = 400K-499K",
+        "F = 500K-599K",
+        "G = 600K-699K",
+        "H = 700K-799K",
+        "I = 800K-899K",
+        "J = 900K-999K",
+        "K = 1M+",
+        "L = Auction (under 70K)"
+      ]
+    },
+    {
+      "statement": "SELECT state as \"State\", sum(CASE WHEN h.aging = 30 THEN 1 ELSE 0 END) AS \"30\", sum(CASE WHEN h.aging = 60 THEN 1 ELSE 0 END) AS \"60\", sum(CASE WHEN h.aging = 90 THEN 1 ELSE 0 END) AS \"90\", sum(CASE WHEN h.aging = 120 THEN 1 ELSE 0 END) AS \"120\", count(*) AS \"Total\" FROM premover.homes h WHERE sold = false AND aging <= 120 GROUP BY h.state ORDER BY h.state",
+      "sheet"  : "State - All",
+      "group"  : true
+    },
+    {
+      "statement": "SELECT state as \"State\", sum(CASE WHEN h.aging = 30 THEN 1 ELSE 0 END) AS \"30\", sum(CASE WHEN h.aging = 60 THEN 1 ELSE 0 END) AS \"60\", sum(CASE WHEN h.aging = 90 THEN 1 ELSE 0 END) AS \"90\", sum(CASE WHEN h.aging = 120 THEN 1 ELSE 0 END) AS \"120\", count(*) AS \"Total\" FROM premover.homes h WHERE sold = false AND aging <= 120 AND h.consumer_id IS NOT NULL GROUP BY h.state ORDER BY h.state",
+      "sheet"  : "State - Name_Address",
+      "group"  : true
+    },
+    {
+      "statement": "SELECT state as \"State\", sum(CASE WHEN h.aging = 30 THEN 1 ELSE 0 END) AS \"30\", sum(CASE WHEN h.aging = 60 THEN 1 ELSE 0 END) AS \"60\", sum(CASE WHEN h.aging = 90 THEN 1 ELSE 0 END) AS \"90\", sum(CASE WHEN h.aging = 120 THEN 1 ELSE 0 END) AS \"120\", count(*) AS \"Total\" FROM premover.homes h WHERE sold = false AND aging <= 120 AND h.consumer_id IS NULL GROUP BY h.state ORDER BY h.state",
+      "sheet"  : "State - Address",
+      "group"  : true
+    },
+    {
+      "statement": "SELECT property_description as \"Property Description\", sum(CASE WHEN h.aging = 30 THEN 1 ELSE 0 END) AS \"30\", sum(CASE WHEN h.aging = 60 THEN 1 ELSE 0 END) AS \"60\", sum(CASE WHEN h.aging = 90 THEN 1 ELSE 0 END) AS \"90\", sum(CASE WHEN h.aging = 120 THEN 1 ELSE 0 END) AS \"120\", count(*) AS \"Total\" FROM premover.homes h WHERE sold = false AND aging <= 120 GROUP BY h.property_description ORDER BY h.property_description",
+      "sheet"  : "Property Description",
+      "group"  : true,
+      "mappings" : [
+        "A = HOUSE FOR SALE",
+        "B = APARTMENT",
+        "C = TOWNHOME",
+        "D = CONDO",
+        "E = AUCTION",
+        "F = COOP",
+        "G = FARM/RANCH",
+        "H = FOR SALE BY OWNER",
+        "I = FORCLOSURE",
+        "J = MOBILE HOME",
+        "K = MULTI-FAMILY",
+        "L = NEW CONSTRUCTION"
+      ]
+    },
+    {
+      "statement": "SELECT county_code, county as \"County\", sum(CASE WHEN h.aging = 30 THEN 1 ELSE 0 END) AS \"30\", sum(CASE WHEN h.aging = 60 THEN 1 ELSE 0 END) AS \"60\", sum(CASE WHEN h.aging = 90 THEN 1 ELSE 0 END) AS \"90\", sum(CASE WHEN h.aging = 120 THEN 1 ELSE 0 END) AS \"120\", count(*) AS \"Total\" FROM premover.homes h WHERE sold = false AND aging <= 120 GROUP BY h.county_code, h.county ORDER BY h.county_code",
+      "sheet"  : "County",
+      "group"  : true,
+      "format" : {
+          "0" : "00000"
+        }
+    },
+    {
+      "statement": "SELECT msa_code as \"MSA Code\", msa as \"MSA\", sum(CASE WHEN h.aging = 30 THEN 1 ELSE 0 END) AS \"30\", sum(CASE WHEN h.aging = 60 THEN 1 ELSE 0 END) AS \"60\", sum(CASE WHEN h.aging = 90 THEN 1 ELSE 0 END) AS \"90\", sum(CASE WHEN h.aging = 120 THEN 1 ELSE 0 END) AS \"120\", count(*) AS \"Total\" FROM premover.homes h WHERE sold = false AND aging <= 120 GROUP BY h.msa_code, h.msa ORDER BY h.msa_code",
+      "sheet"  : "MSA",
+      "group"  : true,
+      "format" : {
+          "0" : "0000"
+        }
+    }
+  ]

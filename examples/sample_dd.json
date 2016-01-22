@@ -1,0 +1,11 @@
+[
+    {
+      "sheet"  : "Homeowner",
+      "statement" : "SELECT home_owner AS Home_Owner, count(*) as Count FROM us_consumer.consumers  GROUP BY home_owner  ORDER BY home_owner ASC ",
+      "group"  : true,
+      "mappings" : [
+        "1=Yes",
+        "0=No"
+      ]
+    }
+  ]
