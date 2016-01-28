@@ -321,7 +321,8 @@ func main() {
 			}
 
 			for i, col := range oldSheet.Cols {
-				layoutSheet.Col(i).SetStyle(col.GetStyle())
+				style := col.GetStyle()
+				layoutSheet.Col(i).SetStyle(style)
 				layoutSheet.Col(i).Width = col.Width
 			}
 		}
