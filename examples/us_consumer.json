@@ -5,6 +5,20 @@
       "group"  : true
     },
     {
+      "statement": "SELECT count(*) as \"With Email\" FROM us_consumer.consumers c INNER JOIN us_consumer.emails e ON c.id = e.consumer_id",
+      "sheet"  : "Other_Counts"
+    },
+    {
+      "statement": "SELECT referal_esp as \"Top 10 ESP Providers\", count(*) as Count FROM us_consumer.consumers c INNER JOIN us_consumer.emails e ON c.id = e.consumer_id WHERE referal_esp is not null GROUP BY referal_esp ORDER BY Count DESC LIMIT 10",
+      "sheet"  : "Other_Counts",
+      "group"  : true
+    },
+    {
+      "statement": "SELECT isp as \"Top 10 ISP Providers\", count(*) as Count FROM us_consumer.consumers c INNER JOIN us_consumer.emails e ON c.id = e.consumer_id WHERE isp is not null GROUP BY isp ORDER BY Count DESC LIMIT 10",
+      "sheet"  : "Other_Counts",
+      "group"  : true
+    },
+    {
       "statement" : "SELECT dwelling_type AS Dwelling, count(*) as count FROM us_consumer.consumers  GROUP BY dwelling_type  ORDER BY dwelling_type ASC",
       "sheet"  : "Dwelling",
       "group"  : true,
@@ -304,7 +318,8 @@
         "51=Surveyors",
         "52=Clergy",
         "53=Insurance/Underwriters",
-        "54=Services/Creative"
+        "54=Services/Creative",
+        "55=Student"
       ]
     },
     {
