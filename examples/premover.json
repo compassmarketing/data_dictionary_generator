@@ -10,6 +10,16 @@
       "group" : true
     },
     {
+      "statement": "SELECT h.beds as Beds, count(*) AS \"Total\" FROM premover.homes h WHERE sold = false AND aging <= 120 GROUP BY h.beds ORDER BY h.beds",
+      "sheet"  : "Beds_Baths",
+      "group" : true
+    },
+    {
+      "statement": "SELECT h.baths as Baths, count(*) AS \"Total\" FROM premover.homes h WHERE sold = false AND aging <= 120 GROUP BY h.baths ORDER BY h.baths",
+      "sheet"  : "Beds_Baths",
+      "group" : true
+    },
+    {
       "statement": "SELECT h.scf, sum(CASE WHEN h.aging = 30 THEN 1 ELSE 0 END) AS \"30\", sum(CASE WHEN h.aging = 60 THEN 1 ELSE 0 END) AS \"60\", sum(CASE WHEN h.aging = 90 THEN 1 ELSE 0 END) AS \"90\", sum(CASE WHEN h.aging = 120 THEN 1 ELSE 0 END) AS \"120\", count(*) AS \"Total\" FROM premover.homes h WHERE sold = false AND aging <= 120 GROUP BY scf ORDER BY h.scf",
       "sheet"  : "SCF",
       "group" : true,
