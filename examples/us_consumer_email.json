@@ -80,27 +80,27 @@
     },
     {
       "statement" : "SELECT count(*) as has_purchase_date  FROM us_consumer.consumers c INNER JOIN us_consumer.emails e ON c.id = e.consumer_id WHERE purchase_date IS NOT NULL ",
-      "sheet"  : "Mortage"
+      "sheet"  : "Mortgage"
     },
     {
       "statement" : "SELECT count(*) as has_purchase_price  FROM us_consumer.consumers c INNER JOIN us_consumer.emails e ON c.id = e.consumer_id WHERE purchase_price IS NOT NULL ",
-      "sheet"  : "Mortage"
+      "sheet"  : "Mortgage"
     },
     {
       "statement" : "SELECT count(*) as has_most_recent_mortage  FROM us_consumer.loans c INNER JOIN us_consumer.emails e ON c.consumer_id = e.consumer_id WHERE type = 'MR1' ",
-      "sheet"  : "Mortage"
+      "sheet"  : "Mortgage"
     },
     {
       "statement" : "SELECT count(*) as has_most_recent_loan_date FROM us_consumer.loans c INNER JOIN us_consumer.emails e ON c.consumer_id = e.consumer_id WHERE type = 'MR1' AND loan_date IS NOT NULL ",
-      "sheet"  : "Mortage"
+      "sheet"  : "Mortgage"
     },
     {
       "statement" : "SELECT count(*) as has_second_most_recent_mortage  FROM us_consumer.loans c INNER JOIN us_consumer.emails e ON c.consumer_id = e.consumer_id WHERE type = 'MR2' ",
-      "sheet"  : "Mortage"
+      "sheet"  : "Mortgage"
     },
     {
       "statement" : "SELECT count(*) as has_second_most_recent_loan_date FROM us_consumer.loans c INNER JOIN us_consumer.emails e ON c.consumer_id = e.consumer_id WHERE type = 'MR2' AND loan_date IS NOT NULL ",
-      "sheet"  : "Mortage"
+      "sheet"  : "Mortgage"
     },
     {
       "statement": "SELECT (CASE WHEN purchase_price >= 1 AND purchase_price < 100000 THEN 'A' WHEN purchase_price >= 100000 AND purchase_price < 199999 THEN 'B' WHEN purchase_price >= 200000 AND purchase_price < 299999 THEN 'C' WHEN purchase_price >= 300000 AND purchase_price < 399999 THEN 'D' WHEN purchase_price >= 400000 AND purchase_price < 499999 THEN 'E' WHEN purchase_price >= 500000 AND purchase_price < 599999 THEN 'F' WHEN purchase_price >= 600000 AND purchase_price < 699999 THEN 'G' WHEN purchase_price >= 700000 AND purchase_price < 799999 THEN 'H' WHEN purchase_price >= 800000 AND purchase_price < 899999 THEN 'I' WHEN purchase_price >= 900000 AND purchase_price < 999999 THEN 'J' WHEN purchase_price >= 1000000 AND purchase_price < 1199999 THEN 'K' WHEN purchase_price >= 1200000 AND purchase_price < 1399999 THEN 'L' WHEN purchase_price >= 1400000 AND purchase_price < 1599999 THEN 'M' WHEN purchase_price >= 1600000 AND purchase_price < 1799999 THEN 'N' WHEN purchase_price >= 1800000 AND purchase_price < 1999999 THEN 'O' WHEN purchase_price >= 2000000 THEN 'P' ELSE 'U' END) as grade, count(*) as Count FROM us_consumer.consumers c INNER JOIN us_consumer.emails e ON c.id = e.consumer_id GROUP BY grade ORDER BY grade",
@@ -320,7 +320,7 @@
         "47=Dentist",
         "48=Nurses",
         "49=Doctors",
-        "50=Chropractors",
+        "50=Chiropractors",
         "51=Surveyors",
         "52=Clergy",
         "53=Insurance/Underwriters",
@@ -387,8 +387,8 @@
       "group"  : true
     },
     {
-      "statement" : "SELECT rate_type AS Most_Recent_Mortage_Interest_Rate, count(*) as Count FROM us_consumer.loans l INNER JOIN us_consumer.emails e ON l.consumer_id = e.consumer_id WHERE type = 'MR1'  GROUP BY rate_type  ORDER BY rate_type ASC",
-      "sheet"  : "MostRecentMortageRate",
+      "statement" : "SELECT rate_type AS Most_Recent_Mortgage_Interest_Rate, count(*) as Count FROM us_consumer.loans l INNER JOIN us_consumer.emails e ON l.consumer_id = e.consumer_id WHERE type = 'MR1'  GROUP BY rate_type  ORDER BY rate_type ASC",
+      "sheet"  : "MostRecentMortgageRate",
       "group" : true,
       "mappings" :[
         "A = Adjustable",
@@ -397,8 +397,8 @@
       ]
     },
     {
-      "statement" : "SELECT loan_type AS Most_Recent_Mortage_Loan_Type, count(*) as Count FROM us_consumer.loans l INNER JOIN us_consumer.emails e ON l.consumer_id = e.consumer_id WHERE type = 'MR1'  GROUP BY loan_type  ORDER BY loan_type ASC",
-      "sheet"  : "MostRecentMortageLoan",
+      "statement" : "SELECT loan_type AS Most_Recent_Mortgage_Loan_Type, count(*) as Count FROM us_consumer.loans l INNER JOIN us_consumer.emails e ON l.consumer_id = e.consumer_id WHERE type = 'MR1'  GROUP BY loan_type  ORDER BY loan_type ASC",
+      "sheet"  : "MostRecentMortgageLoan",
       "group" : true,
       "mappings" : [
         "A = Community Development Authority",
@@ -411,8 +411,8 @@
       ]
     },
     {
-      "statement" : "SELECT rate_type AS Second_Mortage_Interest_Rate, count(*) as Count FROM us_consumer.loans l INNER JOIN us_consumer.emails e ON l.consumer_id = e.consumer_id WHERE type = 'MR2'  GROUP BY rate_type  ORDER BY rate_type ASC",
-      "sheet"  : "SecondMortageRate",
+      "statement" : "SELECT rate_type AS Second_Mortgage_Interest_Rate, count(*) as Count FROM us_consumer.loans l INNER JOIN us_consumer.emails e ON l.consumer_id = e.consumer_id WHERE type = 'MR2'  GROUP BY rate_type  ORDER BY rate_type ASC",
+      "sheet"  : "SecondMortgageRate",
       "group" : true,
       "mappings" :[
         "A = Adjustable",
@@ -421,8 +421,8 @@
       ]
     },
     {
-      "statement" : "SELECT loan_type AS Second_Mortage_Loan_Type, count(*) as Count FROM us_consumer.loans l INNER JOIN us_consumer.emails e ON l.consumer_id = e.consumer_id WHERE type = 'MR2'  GROUP BY loan_type  ORDER BY loan_type ASC",
-      "sheet"  : "SecondMortageLoan",
+      "statement" : "SELECT loan_type AS Second_Mortgage_Loan_Type, count(*) as Count FROM us_consumer.loans l INNER JOIN us_consumer.emails e ON l.consumer_id = e.consumer_id WHERE type = 'MR2'  GROUP BY loan_type  ORDER BY loan_type ASC",
+      "sheet"  : "SecondMortgageLoan",
       "group" : true,
       "mappings" : [
         "A = Community Development Authority",
