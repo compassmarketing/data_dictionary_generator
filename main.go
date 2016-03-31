@@ -71,14 +71,9 @@ func writeRowToSheet(data [][]byte, sheet string, format map[string]string) ([]i
 
 	row := activeSheet.AddRow()
 	for idx, bytes := range data {
-		var value string
-
-		if bytes != nil {
-			value = string(bytes)
-		}
 
 		cell = row.AddCell()
-		if num, err := strconv.Atoi(value); err == nil {
+		if num, err := strconv.Atoi(string(bytes)); err == nil {
 			counts[idx] = num
 
 			if val, ok := format[strconv.Itoa(idx)]; ok {
@@ -88,10 +83,12 @@ func writeRowToSheet(data [][]byte, sheet string, format map[string]string) ([]i
 			}
 
 		} else {
-			if empty(value) {
+			if bytes == nil {
 				cell.Value = "Unknown"
+			} else if empty(string(bytes)) {
+				cell.Value = "Blank"
 			} else {
-				cell.Value = value
+				cell.Value = string(bytes)
 			}
 		}
 	}
